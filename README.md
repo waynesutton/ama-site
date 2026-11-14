@@ -25,7 +25,7 @@ Updates show up live, since every list is a Convex query.
 | Auth | [Convex Auth v2](https://docs.convex.dev/auth/convex-auth), username and password |
 | Hosting | [`@convex-dev/static-hosting`](https://www.convex.dev/components/static-hosting) |
 
-Convex Auth v2 keeps usernames and password hashes in its own components, so the app's `users` table only holds an optional `isAdmin` flag. There are no JWT keys to set: the deployment signs its own tokens.
+Convex Auth v2 keeps usernames and password hashes in its own components, so the app's own tables hold only event data. There are no JWT keys to set: the deployment signs its own tokens.
 
 ## Run it locally
 
@@ -34,26 +34,10 @@ Needs Node 22 or newer.
 ```sh
 npm install
 npx convex dev    # log in, pick a team, create or link a project
-npx convex env set ADMIN_USERNAMES "your-username"
 npm run dev       # Vite plus convex dev, side by side
 ```
 
-`npx convex dev` writes the deployment URL to `.env.local`. Sign up in the app with the username you put in `ADMIN_USERNAMES` and the Admin link shows up in the header.
-
-## Admins
-
-A user is an admin when either is true:
-
-- their username is in the `ADMIN_USERNAMES` env var (comma-separated, case-insensitive)
-- their row in the `users` table has `isAdmin: true`, set by hand in the Convex dashboard
-
-Env vars are per deployment. Set `ADMIN_USERNAMES` on production too:
-
-```sh
-npx convex env set ADMIN_USERNAMES "your-username" --prod
-```
-
-Claim the admin username on a new deployment before you share the link. Whoever registers it first gets admin.
+`npx convex dev` writes the deployment URL to `.env.local`.
 
 ## Deploy
 
@@ -73,12 +57,12 @@ The static-hosting component owns `/` on the `.convex.site` URL and serves React
 ```
 convex/
   auth.ts             Convex Auth v2 setup and the loggedInUser query
-  users.ts            createUser callback and the admin check
-  functions.ts        events, questions, votes, comments, admin actions
+  users.ts            createUser callback and the current-user helper
+  functions.ts        events, questions, votes, comments
   schema.ts           app tables
   convex.config.ts    auth, password, username, and static-hosting components
 src/
-  pages/              Home, Event, Admin, Admin event, Sign in
+  pages/              Home, Event, Sign in, and more
   SignInForm.tsx      sign in and sign up form
 design/
   og-preview.html     source for the link preview card
